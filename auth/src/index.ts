@@ -1,4 +1,5 @@
 import express from 'express';
+import { authRoutes } from './routes/authRoutes';
 
 const app = express();
 
@@ -6,8 +7,6 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get('/app/auth/user', (req, res) => {
-    res.send('Hi there!');
-})
+authRoutes(app);
 
 app.listen(3000, () => console.log('Listening in port 3000'));
