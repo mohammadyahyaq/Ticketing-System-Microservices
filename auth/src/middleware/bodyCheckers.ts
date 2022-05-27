@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
+import { RouteError } from "../Errors/RouteError";
 
 export const emailRequired = body('email')
     .isEmail()
@@ -17,7 +18,7 @@ export const showMessages = (req: Request, res: Response, next: NextFunction) =>
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        return res.status(400).send(errors.array());
+        throw new RouteError(errors.array().toString(), 400);
     } else {
         next();
     }
