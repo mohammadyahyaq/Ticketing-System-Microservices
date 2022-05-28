@@ -1,4 +1,5 @@
 import { Schema, model, Model, Document } from "mongoose";
+import { Password } from '../utils/password';
 
 // interface that represents that type of User.build() parameter
 interface UserAttrs {
@@ -27,6 +28,16 @@ const userSchema = new Schema({
         type: String, 
         required: true
     }
+});
+
+userSchema.pre('save', async function(done) {
+    // we need to use function syntax to access this keyword for the current function
+    if (this.isModified('password')) {
+        // we need this condition to allow updating an existing document using the save() function
+        const hashed = await Password.toHash(this.get('password'));
+        this.set('password', hashed);
+    }
+    done();
 });
 
 
