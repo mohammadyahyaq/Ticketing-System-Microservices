@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import { Request, Response } from 'express';
 
 export const getUser = (req: Request, res: Response) => {
     res.status(200).send('Hi there!');
