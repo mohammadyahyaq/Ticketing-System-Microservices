@@ -5,6 +5,9 @@ import { authRoutes } from './routes/authRoutes';
 
 const app = express();
 
+// connect to the database
+import './config/database';
+
 // setup the initial middlewares
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
