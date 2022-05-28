@@ -1,7 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
 import { errorHandler } from './middleware/errorHandler';
-import { authRoutes } from './routes/authRoutes';
+import { authRoutes } from './routes/auth.route';
 
 const app = express();
 

@@ -1,5 +1,5 @@
 import { Express } from 'express';
-import { getUser, signUp } from '../controllers/authController';
+import { getUser, signUp } from '../controllers/auth.controller';
 import { emailRequired, passwordRequired, showMessages } from '../middleware/bodyCheckers';
 
 export const authRoutes = (app: Express) => {
