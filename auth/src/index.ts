@@ -1,5 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
+import cookieSession from 'cookie-session';
+
 import { errorHandler } from './middleware/errorHandler';
 import { authRoutes } from './routes/auth.route';
 
@@ -9,8 +11,13 @@ const app = express();
 import './config/database';
 
 // setup the initial middlewares
+app.set('trust proxy', true);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieSession({
+    signed: false, // to remove encryption
+    secure: true   // restrict the cookie to only work in https connection
+}));
 
 authRoutes(app);
 
