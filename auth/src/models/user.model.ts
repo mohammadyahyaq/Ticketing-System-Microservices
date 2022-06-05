@@ -25,12 +25,23 @@ const userSchema = new Schema({
         required: true
     },
     password: {
-        type: String, 
+        type: String,
         required: true
     }
-});
+}, {
+    toJSON: {
+        // the following function will be called when we stringify our object
+        transform(doc, ret) {
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.password;
+            delete ret.__v;
+        }
+    }
+}
+);
 
-userSchema.pre('save', async function(done) {
+userSchema.pre('save', async function (done) {
     // we need to use function syntax to access this keyword for the current function
     if (this.isModified('password')) {
         // we need this condition to allow updating an existing document using the save() function
