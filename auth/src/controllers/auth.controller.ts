@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { RouteError } from '../Errors/RouteError';
 import { User } from '../models/user.model'; // the user model
 
@@ -17,6 +18,15 @@ export const signUp = async (req: Request, res: Response) => {
 
     const user = User.build({ email, password });
     await user.save();
+
+    // generate JWT
+    const userJwt = jwt.sign({
+        id: user.id,
+        email: user.email
+    }, 'asdf');
+
+    // Store it in session object
+    req.session = { jwt: userJwt };
 
     console.log('the user is created');
     res.status(201).send(user); // 201 means the record is created successfully!
