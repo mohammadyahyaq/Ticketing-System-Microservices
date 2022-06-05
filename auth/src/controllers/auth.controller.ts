@@ -29,6 +29,9 @@ export const signUp = async (req: Request, res: Response) => {
     req.session = { jwt: userJwt };
 
     console.log('the user is created');
-    res.status(201).send(user); // 201 means the record is created successfully!
-    
+    res.status(201).send(user); // 201 means the record is created successfully! 
+}
+
+export const signIn = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
 }
