@@ -1,11 +1,10 @@
 import { Express } from 'express';
 import { getUser, signIn, signOut, signUp } from '../controllers/auth.controller';
-import { currentUser } from '../middleware/authMiddleware';
 import { emailRequired, passwordRequired, showMessages } from '../middleware/bodyCheckers';
 
 export const authRoutes = (app: Express) => {
     // here we will list all the routes for the authentication
-    app.get('/api/auth/user', currentUser, getUser);
+    app.get('/api/auth/user', getUser);
 
     app.post('/api/auth/signout', signOut);
 
