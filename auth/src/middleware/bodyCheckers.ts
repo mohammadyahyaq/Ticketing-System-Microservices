@@ -18,7 +18,7 @@ export const showMessages = (req: Request, res: Response, next: NextFunction) =>
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        throw new RouteError(errors.array().toString(), 400);
+        throw new RouteError(errors.array().map(error => ' ' + error.msg).toString(), 400);
     } else {
         next();
     }
