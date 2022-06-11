@@ -5,7 +5,25 @@ import { User } from '../models/user.model'; // the user model
 import { Password } from '../utils/password';
 
 export const getUser = (req: Request, res: Response) => {
-    res.status(200).send('Hi there!');
+    if (!req.session?.jwt) {
+        return res.send({ currentUser: null });
+    }
+
+    try {
+        const payload = jwt.verify(
+            req.session.jwt,
+            process.env.JWT_KEY!
+        );
+
+        res.send({ currentUser: payload });
+    } catch (error) {
+        console.log({ currentUser: null });
+    }
+}
+
+export const signOut = (req: Request, res: Response) => {
+    req.session = null;
+    res.send({});
 }
 
 export const signUp = async (req: Request, res: Response) => {
