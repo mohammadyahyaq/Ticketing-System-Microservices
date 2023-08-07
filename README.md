@@ -7,7 +7,4 @@
 - using Next.js framework to get the advantages of the **SERVER SIDE RENDERING** in my frontend
 - And so match more!!!
 
-The project is not complete right now
-
-__*Note: you need to add this line of code in the "/etc/hosts" file*__
-> 127.0.0.1 ticketing.dev
+The project is not completed right now
