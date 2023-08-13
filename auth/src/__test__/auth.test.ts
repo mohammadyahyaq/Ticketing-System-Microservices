@@ -154,9 +154,10 @@ it("removes the cookie if the user logged out", async () => {
 
 // ================ Current user ================
 it("response with details of the current user", async () => {
+  // get an authenticated cookie
   const cookie = await getAuthCookie();
 
-  // get the user details, and attatch the cookie
+  // get the user details
   const res = await request(app)
     .get("/api/auth/user")
     .set("Cookie", cookie)
@@ -165,4 +166,11 @@ it("response with details of the current user", async () => {
 
   // check the body
   expect(res.body.currentUser.email).toEqual("test@test.com");
+});
+
+it("response with null if the user not authenticated", async () => {
+  // get the user details, and attatch the cookie
+  const res = await request(app).get("/api/auth/user").send().expect(200);
+
+  expect(res.body.currentUser).toEqual(null);
 });
