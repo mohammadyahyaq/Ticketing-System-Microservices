@@ -44,3 +44,23 @@ it("should returns a status 400, if the body is missing the email or password", 
     .send({ password: "Test1234" })
     .expect(400);
 });
+
+it("disallows duplicate emails", async () => {
+  // create an email
+  await request(app)
+    .post("/api/auth/signup")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(201);
+
+  // create the same email again
+  await request(app)
+    .post("/api/auth/signup")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(400);
+});
