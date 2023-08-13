@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../app";
 
+// ================ Sign up ================
 it("should returns 201 after successful signup request", async () => {
   await request(app)
     .post("/api/auth/signup")
@@ -74,5 +75,59 @@ it("sets a cookie after successful signup", async () => {
     })
     .expect(201);
 
+  expect(res.get("Set-Cookie")).toBeDefined();
+});
+
+// ================ Sign in ================
+it("fails if user tried to logged in with an incorrect credintials", async () => {
+  await request(app)
+    .post("/api/auth/signin")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(401);
+});
+
+it("fails if user entered an incorrect password", async () => {
+  // create the user
+  await request(app)
+    .post("/api/auth/signup")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(201);
+
+  // login with an incorrect password
+  await request(app)
+    .post("/api/auth/signin")
+    .send({
+      email: "test@test.com",
+      password: "1234Test",
+    })
+    .expect(401);
+});
+
+it("logins successfully, if the user entered a correct credintials", async () => {
+  // create the user
+  await request(app)
+    .post("/api/auth/signup")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(201);
+
+  // login with that user
+  const res = await request(app)
+    .post("/api/auth/signin")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(200);
+
+  // check the cookie if it's exist
   expect(res.get("Set-Cookie")).toBeDefined();
 });
