@@ -18,7 +18,8 @@ app.use(express.json());
 app.use(
   cookieSession({
     signed: false, // to remove encryption
-    secure: true, // restrict the cookie to only work in https connection
+    // restrict the cookie to only work in https connection in non test environment
+    secure: process.env.NODE_ENV !== "test",
   })
 );
 app.use(currentUser);
