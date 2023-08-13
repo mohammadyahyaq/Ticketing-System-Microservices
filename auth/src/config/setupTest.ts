@@ -1,5 +1,6 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
+import request from "supertest";
 import { app } from "../app";
 
 let mongo: MongoMemoryServer;
@@ -31,3 +32,24 @@ afterAll(async () => {
   await mongo?.stop();
   await mongoose.connection.close();
 });
+
+// ============= globally scoped functions (testing helpers) =============
+// update the global type
+declare global {
+  var getAuthCookie: () => Promise<string[]>;
+}
+
+global.getAuthCookie = async () => {
+  const email = "test@test.com";
+  const password = "Test1234";
+
+  // login
+  const res = await request(app)
+    .post("/api/auth/signup")
+    .send({ email, password })
+    .expect(201);
+
+  const cookie = res.get("Set-Cookie");
+
+  return cookie;
+};

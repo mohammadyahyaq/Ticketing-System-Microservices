@@ -154,17 +154,9 @@ it("removes the cookie if the user logged out", async () => {
 
 // ================ Current user ================
 it("response with details of the current user", async () => {
-  // create the user, and login
-  const sinupRes = await request(app)
-    .post("/api/auth/signup")
-    .send({
-      email: "test@test.com",
-      password: "Test1234",
-    })
-    .expect(201);
+  const cookie = await getAuthCookie();
 
   // get the user details, and attatch the cookie
-  const cookie = sinupRes.get("Set-Cookie");
   const res = await request(app)
     .get("/api/auth/user")
     .set("Cookie", cookie)
