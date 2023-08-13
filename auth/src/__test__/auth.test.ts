@@ -131,3 +131,23 @@ it("logins successfully, if the user entered a correct credintials", async () =>
   // check the cookie if it's exist
   expect(res.get("Set-Cookie")).toBeDefined();
 });
+
+// ================ Sign out ================
+it("removes the cookie if the user logged out", async () => {
+  // create the user, and login
+  await request(app)
+    .post("/api/auth/signup")
+    .send({
+      email: "test@test.com",
+      password: "Test1234",
+    })
+    .expect(201);
+
+  // logout the user
+  const res = await request(app).post("/api/auth/signout").send({}).expect(200);
+
+  // check if we removed the cookie
+  expect(res.get("Set-Cookie")[0]).toEqual(
+    "session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly"
+  );
+});
