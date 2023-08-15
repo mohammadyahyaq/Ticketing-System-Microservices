@@ -16,7 +16,7 @@ build:
           - src: 'src/**/*.ts'
             dest: .
     - image: mohammadyahayq/client
-      context: ./ticketing-client
+      context: ./client
       docker:
         dockerfile: Dockerfile
       sync:
