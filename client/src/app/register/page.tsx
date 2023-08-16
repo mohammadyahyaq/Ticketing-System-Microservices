@@ -14,8 +14,9 @@ export default function RegisterPage() {
         className="flex flex-col gap-3 px-6 py-9 mx-auto w-96 h-96 bg-white shadow-md rounded-md"
         onSubmit={async (e) => {
           e.preventDefault();
-
+          
           const res = await fetch("/api/auth/signup", {
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
           });
@@ -60,7 +61,7 @@ export default function RegisterPage() {
                 <p className="text-red-700 text-sm">The email is created successfully</p>
             </div>
         )}
-        <button className="bg-blue-600 hover:bg-blue-500 text-white text-xl py-2 rounded-md mt-4">
+        <button className="bg-blue-600 hover:bg-blue-500 text-white text-xl py-2 rounded-md mt-4" type="submit">
           Sign Up
         </button>
       </form>
