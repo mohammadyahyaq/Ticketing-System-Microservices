@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { RouteError } from '../Errors/RouteError';
+import { RouteError } from '@mohammadyahyaq-learning/common';
 import { User } from '../models/user.model'; // the user model
 import { Password } from '../utils/password';
 

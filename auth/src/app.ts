@@ -4,12 +4,10 @@ import express from "express";
 import "express-async-errors";
 import cookieSession from "cookie-session";
 
-import { errorHandler } from "./middleware/errorHandler";
+import { currentUser, errorHandler } from "@mohammadyahyaq-learning/common";
 import { authRoutes } from "./routes/auth.route";
 
 const app = express();
-
-import { currentUser } from "./middleware/authMiddleware";
 
 // setup the initial middlewares
 app.set("trust proxy", true);

@@ -1,6 +1,6 @@
 import { Express } from 'express';
 import { getUser, signIn, signOut, signUp } from '../controllers/auth.controller';
-import { emailRequired, passwordRequired, showMessages } from '../middleware/bodyCheckers';
+import { emailRequired, passwordRequired, showMessages } from '@mohammadyahyaq-learning/common';
 
 export const authRoutes = (app: Express) => {
     // here we will list all the routes for the authentication
