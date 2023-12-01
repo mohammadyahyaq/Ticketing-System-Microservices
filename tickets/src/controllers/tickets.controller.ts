@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { Ticket } from "../models/tickets.model";
+import { RouteError } from "@mohammadyahyaq-learning/common";
 
 export const createTicket = async (req: Request, res: Response) => {
   const { title, price } = req.body;
@@ -9,4 +10,16 @@ export const createTicket = async (req: Request, res: Response) => {
   await ticket.save();
 
   res.status(201).send(ticket);
+};
+
+export const getTicketById = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const ticket = await Ticket.findById(id);
+
+  if (!ticket) {
+    throw new RouteError("Not Found", 404);
+  }
+
+  res.send(ticket);
 };

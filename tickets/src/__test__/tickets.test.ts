@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../app";
 import { Ticket } from "../models/tickets.model";
+import { Types } from "mongoose";
 
 // ============= create ticket =============
 it("should returns an error if the user is not logged in", async () => {
@@ -73,4 +74,38 @@ it("should create a ticket if the request is valid", async () => {
   // check that the record contains the same details as the request
   expect(tickets[0].title).toEqual(requestBody.title);
   expect(tickets[0].price).toEqual(requestBody.price);
+});
+
+// ============= read tickets =============
+
+// =========== read ticket by id ===========
+it("returns 404 if the ticket not found", async () => {
+  // generate a valid mongoose id
+  const invalidId = new Types.ObjectId().toHexString();
+  const response = await request(app)
+    .get(`/api/tickets/${invalidId}`)
+    .expect(404);
+});
+
+it("returns the ticket if the ticket found", async () => {
+  // step 1: create a ticket
+  const validCookie = getAuthCookie();
+
+  const createdTicket = {
+    title: "test test test",
+    price: 20,
+  };
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send(createdTicket)
+    .expect(201);
+
+  const response = await request(app)
+    .get(`/api/tickets/${createTicketResponse.body.id}`)
+    .send()
+    .expect(200);
+
+  expect(response.body.title).toEqual(createdTicket.title);
+  expect(response.body.price).toEqual(createdTicket.price);
 });

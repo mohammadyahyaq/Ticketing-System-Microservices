@@ -1,5 +1,5 @@
 import { Express } from "express";
-import { createTicket } from "../controllers/tickets.controller";
+import { createTicket, getTicketById } from "../controllers/tickets.controller";
 import { authRequired, showMessages } from "@mohammadyahyaq-learning/common";
 import { checkSchema } from "express-validator";
 
@@ -29,4 +29,6 @@ export const ticketsRoutes = (app: Express) => {
     showMessages,
     createTicket
   );
+
+  app.get("/api/tickets/:id", getTicketById);
 };
