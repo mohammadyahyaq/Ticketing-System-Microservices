@@ -115,7 +115,7 @@ it("returns 404 if the ticket not found", async () => {
 });
 
 it("returns the ticket if the ticket found", async () => {
-  // step 1: create a ticket
+  // create a ticket
   const validCookie = getAuthCookie();
 
   const createdTicket = {
@@ -135,4 +135,134 @@ it("returns the ticket if the ticket found", async () => {
 
   expect(response.body.title).toEqual(createdTicket.title);
   expect(response.body.price).toEqual(createdTicket.price);
+});
+
+// ============ update tickets ============
+it("should returns 404 if provided id not exist", async () => {
+  const validCookie = getAuthCookie();
+
+  const invalidId = new Types.ObjectId().toHexString();
+  await request(app)
+    .put(`/api/tickets/${invalidId}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "test test",
+      price: 10,
+    })
+    .expect(404);
+});
+
+it("should returns 401 if user not authorized", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "test test test",
+      price: 10,
+    })
+    .expect(201);
+
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    // no valid token sent
+    .send({
+      title: "test test",
+      price: 10,
+    })
+    .expect(401);
+});
+
+it("should returns 401 if user is not owning the ticket", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "old title",
+      price: 10,
+    })
+    .expect(201);
+
+  // update the same ticket with another user
+  const newValidId = getAuthCookie();
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", newValidId)
+    .send({
+      title: "new title",
+      price: 20,
+    })
+    .expect(401);
+});
+
+it("should returns 400 if provides an invalid title or price", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "old title",
+      price: 10,
+    })
+    .expect(201);
+
+  // on invalid title
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "",
+      price: 10,
+    })
+    .expect(400);
+
+  // on invalid price
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "new test",
+      price: -10,
+    })
+    .expect(400);
+});
+
+it("should updates the ticket if the request is valid", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "old title",
+      price: 10,
+    })
+    .expect(201);
+
+  // update the ticket
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "new title",
+      price: 20,
+    })
+    .expect(200);
+
+  // make sure that the ticket is updated
+  const getTicketResponse = await request(app)
+    .get(`/api/tickets/${createTicketResponse.body.id}`)
+    .send()
+    .expect(200);
+
+  expect(getTicketResponse.body.title).toEqual("new title");
+  expect(getTicketResponse.body.price).toEqual(20);
 });

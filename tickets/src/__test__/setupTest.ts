@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import jwt from "jsonwebtoken";
 
 let mongo: MongoMemoryServer;
@@ -41,7 +41,7 @@ declare global {
 global.getAuthCookie = () => {
   // create the token
   const token = jwt.sign(
-    { id: "asdf", email: "test@test.com" },
+    { id: new Types.ObjectId().toHexString(), email: "test@test.com" },
     process.env.JWT_KEY!
   );
 
