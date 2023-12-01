@@ -77,6 +77,33 @@ it("should create a ticket if the request is valid", async () => {
 });
 
 // ============= read tickets =============
+it("can get the list of tickets", async () => {
+  // create list of tickets to test the api
+  const validCookie = getAuthCookie();
+
+  const listOfTickets = [
+    {
+      title: "ticket 1",
+      price: 20,
+    },
+    {
+      title: "ticket 2",
+      price: 10,
+    },
+  ];
+
+  for (const ticket of listOfTickets) {
+    await request(app)
+      .post("/api/tickets")
+      .set("Cookie", validCookie)
+      .send(ticket)
+      .expect(201);
+  }
+
+  const response = await request(app).get("/api/tickets").send().expect(200);
+
+  expect(response.body.length).toEqual(2);
+});
 
 // =========== read ticket by id ===========
 it("returns 404 if the ticket not found", async () => {

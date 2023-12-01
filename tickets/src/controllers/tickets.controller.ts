@@ -12,6 +12,12 @@ export const createTicket = async (req: Request, res: Response) => {
   res.status(201).send(ticket);
 };
 
+export const getAllTickets = async (req: Request, res: Response) => {
+  const tickets = await Ticket.find({});
+
+  res.send(tickets);
+};
+
 export const getTicketById = async (req: Request, res: Response) => {
   const { id } = req.params;
 
