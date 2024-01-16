@@ -1,6 +1,8 @@
 import nats from "node-nats-streaming";
+import { randomBytes } from "crypto";
 
-const stan = nats.connect("ticketing", "abc", {
+// we want to make a random client ID for each service to allow making replicas of this service
+const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
   url: "http://localhost:4222",
 });
 
