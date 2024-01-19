@@ -9,6 +9,12 @@ const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("Listener connected to NATS");
 
+  // callback on close
+  stan.on("close", () => {
+    console.log("NATS connection closed");
+    process.exit();
+  });
+
   // we want to make the nats service to wait for us to send acknowledgement when we processed the message correctly
   const options = stan.subscriptionOptions().setManualAckMode(true);
   // the second argument allows us to make a replica of this service
@@ -29,3 +35,8 @@ stan.on("connect", () => {
     msg.ack();
   });
 });
+
+// close connection on interrupt
+process.on("SIGINT", () => stan.close());
+// close connection on terminate
+process.on("SIGTERM", () => stan.close());

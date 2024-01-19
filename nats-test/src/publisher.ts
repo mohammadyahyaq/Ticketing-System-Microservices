@@ -10,6 +10,12 @@ const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
 stan.on("connect", () => {
   console.log("Publisher connected to NATS");
 
+  // callback on close
+  stan.on("close", () => {
+    console.log("NATS connection closed");
+    process.exit();
+  });
+
   // lets create a data to send
   const data = JSON.stringify({
     id: "123",
@@ -22,3 +28,8 @@ stan.on("connect", () => {
     console.log("Event published");
   });
 });
+
+// close connection on interrupt
+process.on("SIGINT", () => stan.close());
+// close connection on terminate
+process.on("SIGTERM", () => stan.close());
