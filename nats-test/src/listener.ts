@@ -16,7 +16,14 @@ stan.on("connect", () => {
   });
 
   // we want to make the nats service to wait for us to send acknowledgement when we processed the message correctly
-  const options = stan.subscriptionOptions().setManualAckMode(true);
+  const options = stan
+    .subscriptionOptions()
+    .setManualAckMode(true)
+    // if service got started we want to get all previous events
+    .setDeliverAllAvailable()
+    // when service is down for a while we want to get all missed events
+    .setDurableName("ticket-service");
+
   // the second argument allows us to make a replica of this service
   // were this service will receive only one message to this queue group
   const subscription = stan.subscribe(
