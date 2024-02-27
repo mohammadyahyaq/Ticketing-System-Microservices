@@ -1,5 +1,6 @@
 import nats from "node-nats-streaming";
 import { randomBytes } from "crypto";
+import { TicketCreatedPublisher } from "./events/ticket-created-publisher";
 
 // we want to make a random client ID for each service to allow making replicas of this service
 const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
@@ -16,17 +17,25 @@ stan.on("connect", () => {
     process.exit();
   });
 
-  // lets create a data to send
-  const data = JSON.stringify({
+  const publisher = new TicketCreatedPublisher(stan);
+
+  publisher.publish({
     id: "123",
     title: "movie",
     price: 20,
   });
 
-  stan.publish("ticket:created", data, () => {
-    // callback will be triggered after event published
-    console.log("Event published");
-  });
+  // lets create a data to send
+  // const data = JSON.stringify({
+  //   id: "123",
+  //   title: "movie",
+  //   price: 20,
+  // });
+
+  // stan.publish("ticket:created", data, () => {
+  //   // callback will be triggered after event published
+  //   console.log("Event published");
+  // });
 });
 
 // close connection on interrupt
