@@ -8,7 +8,7 @@ const stan = nats.connect("ticketing", randomBytes(4).toString("hex"), {
 });
 
 // callback when the app successfully connected to the stan server
-stan.on("connect", () => {
+stan.on("connect", async () => {
   console.log("Publisher connected to NATS");
 
   // callback on close
@@ -19,11 +19,15 @@ stan.on("connect", () => {
 
   const publisher = new TicketCreatedPublisher(stan);
 
-  publisher.publish({
-    id: "123",
-    title: "movie",
-    price: 20,
-  });
+  try {
+    await publisher.publish({
+      id: "123",
+      title: "movie",
+      price: 20,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
   // lets create a data to send
   // const data = JSON.stringify({
