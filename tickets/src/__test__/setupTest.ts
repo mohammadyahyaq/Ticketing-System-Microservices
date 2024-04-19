@@ -24,6 +24,9 @@ beforeEach(async () => {
   for (const collection of collections) {
     await collection.deleteMany({});
   }
+
+  // clear mocks
+  jest.clearAllMocks();
 });
 
 // after the test clean up the db
@@ -56,3 +59,6 @@ global.getAuthCookie = () => {
 
   return [`session=${base64}`];
 };
+
+// mocks
+jest.mock("../config/SingletonNatsClient");

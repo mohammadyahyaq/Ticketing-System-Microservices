@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../app";
 import { Ticket } from "../models/tickets.model";
 import { Types } from "mongoose";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
 
 // ============= create ticket =============
 it("should returns an error if the user is not logged in", async () => {
@@ -74,6 +75,22 @@ it("should create a ticket if the request is valid", async () => {
   // check that the record contains the same details as the request
   expect(tickets[0].title).toEqual(requestBody.title);
   expect(tickets[0].price).toEqual(requestBody.price);
+});
+
+it("publeshes an event", async () => {
+  const validCookie = getAuthCookie();
+
+  const requestBody = {
+    title: "test test test",
+    price: 20,
+  };
+  const response = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send(requestBody);
+
+  expect(response.status).toEqual(201);
+  expect(singletonNatsClient.client.publish).toHaveBeenCalled();
 });
 
 // ============= read tickets =============
@@ -265,4 +282,30 @@ it("should updates the ticket if the request is valid", async () => {
 
   expect(getTicketResponse.body.title).toEqual("new title");
   expect(getTicketResponse.body.price).toEqual(20);
+});
+
+it("publeshes an event", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "old title",
+      price: 10,
+    })
+    .expect(201);
+
+  // update the ticket
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "new title",
+      price: 20,
+    })
+    .expect(200);
+
+  expect(singletonNatsClient.client.publish).toHaveBeenCalled();
 });

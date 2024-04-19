@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { Ticket } from "../models/tickets.model";
 import { RouteError } from "@mohammadyahyaq-learning/common";
+import { TicketCreatedPublisher } from "../publishers/TicketCreatedPublisher";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
+import { TicketUpdatedPublisher } from "../publishers/TicketUpdatedPublisher";
 
 export const createTicketController = async (req: Request, res: Response) => {
   const { title, price } = req.body;
@@ -8,6 +11,16 @@ export const createTicketController = async (req: Request, res: Response) => {
   // create the ticket
   const ticket = Ticket.build({ title, price, userId: req.user!.id });
   await ticket.save();
+
+  // publish a ticket created event
+  await new TicketCreatedPublisher(singletonNatsClient.client).publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+    createdAt: ticket.createdAt,
+    updatedAt: ticket.updatedAt,
+  });
 
   res.status(201).send(ticket);
 };
@@ -48,6 +61,16 @@ export const updateTicketController = async (req: Request, res: Response) => {
     price: req.body.price,
   });
   ticket.save();
+
+  // publish update event
+  await new TicketUpdatedPublisher(singletonNatsClient.client).publish({
+    id: ticket.id,
+    title: ticket.title,
+    price: ticket.price,
+    userId: ticket.userId,
+    createdAt: ticket.createdAt,
+    updatedAt: ticket.updatedAt,
+  });
 
   res.send(ticket);
 };
