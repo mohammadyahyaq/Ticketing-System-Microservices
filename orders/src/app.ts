@@ -5,7 +5,7 @@ import "express-async-errors";
 import cookieSession from "cookie-session";
 
 import { currentUser, errorHandler } from "@mohammadyahyaq-learning/common";
-// import { ticketsRoutes } from "./routes/tickets.route";
+import { ordersRoutes } from "./routes/orders.route";
 
 const app = express();
 
@@ -22,7 +22,7 @@ app.use(
 );
 app.use(currentUser);
 
-// ticketsRoutes(app);
+ordersRoutes(app);
 
 // now we add the error handler
 app.use(errorHandler);
