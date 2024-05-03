@@ -5,6 +5,62 @@ import { Ticket } from "../models/ticket.model";
 import { Order } from "../models/order.model";
 import { OrderStatus } from "@mohammadyahyaq-learning/common";
 
+// get all orders
+it("fetches orders for particular user", async () => {
+  // create three tickets
+  async function buildTicket() {
+    const ticket = Ticket.build({
+      title: "Movie",
+      price: 20,
+    });
+    await ticket.save();
+    return ticket;
+  }
+  const ticketOne = await buildTicket();
+  const ticketTwo = await buildTicket();
+  const ticketThree = await buildTicket();
+
+  const userOneToken = getAuthCookie();
+  const userTwoToken = getAuthCookie();
+
+  // create one order for user #1
+  await request(app)
+    .post("/api/orders")
+    .set("Cookie", userOneToken)
+    .send({
+      ticketId: ticketOne.id,
+    })
+    .expect(201);
+
+  // create two orders for user #2
+  const { body: orderOne } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", userTwoToken)
+    .send({
+      ticketId: ticketTwo.id,
+    })
+    .expect(201);
+  const { body: orderTwo } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", userTwoToken)
+    .send({
+      ticketId: ticketThree.id,
+    })
+    .expect(201);
+
+  // make the request to [GET] /api/orders
+  const response = await request(app)
+    .get("/api/orders")
+    .set("Cookie", userTwoToken);
+
+  // test if the response is correct
+  expect(response.body.length).toEqual(2);
+  expect(response.body[0].id).toEqual(orderOne.id);
+  expect(response.body[1].id).toEqual(orderTwo.id);
+  expect(response.body[0].ticket.id).toEqual(ticketTwo.id);
+  expect(response.body[1].ticket.id).toEqual(ticketThree.id);
+});
+
 // create order
 it("should returns an error if the ticket doesn't exist", async () => {
   const validCookie = getAuthCookie();
@@ -60,3 +116,5 @@ it("reserves a ticket", async () => {
     .send({ ticketId: ticket.id })
     .expect(201);
 });
+
+it.todo("emits an event");

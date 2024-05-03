@@ -3,8 +3,12 @@ import { Ticket } from "../models/ticket.model";
 import { OrderStatus, RouteError } from "@mohammadyahyaq-learning/common";
 import { Order } from "../models/order.model";
 
-export const getAllOrders = (req: Request, res: Response) => {
-  res.send({});
+export const getAllOrders = async (req: Request, res: Response) => {
+  const orders = await Order.find({
+    userId: req.user!.id,
+  }).populate("ticket");
+
+  res.status(200).send(orders);
 };
 
 export const createOrder = async (req: Request, res: Response) => {

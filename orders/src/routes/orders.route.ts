@@ -10,7 +10,7 @@ import { checkSchema } from "express-validator";
 
 export const ordersRoutes = (app: Express) => {
   // here we will list all the routes related to the orders
-  app.get("/api/orders", getAllOrders);
+  app.get("/api/orders", authRequired, getAllOrders);
 
   app.post(
     "/api/orders",
