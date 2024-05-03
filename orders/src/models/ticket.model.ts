@@ -1,4 +1,6 @@
 import { Document, Model, Schema, model } from "mongoose";
+import { Order } from "./order.model";
+import { OrderStatus } from "@mohammadyahyaq-learning/common";
 
 // interface that represents that type of Ticket.build() parameter
 interface TicketAttrs {
@@ -15,6 +17,7 @@ interface TicketModel extends Model<TicketDoc> {
 export interface TicketDoc extends Document {
   title: string;
   price: number;
+  isReserved(): Promise<boolean>;
 }
 
 const ticketSchema = new Schema(
@@ -40,6 +43,21 @@ const ticketSchema = new Schema(
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
+};
+// we need to use function keyword to use this keyword
+ticketSchema.methods.isReserved = async function () {
+  const existingOrder = await Order.findOne({
+    ticket: this,
+    status: {
+      $in: [
+        OrderStatus.Created,
+        OrderStatus.AwaitingPayment,
+        OrderStatus.Complete,
+      ],
+    },
+  });
+
+  return Boolean(existingOrder);
 };
 
 const Ticket = model<TicketDoc, TicketModel>("Ticket", ticketSchema);

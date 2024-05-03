@@ -1,5 +1,6 @@
 import { Express } from "express";
 import {
+  createOrder,
   deleteOrder,
   getAllOrders,
   getOrderDetails,
@@ -10,6 +11,19 @@ import { checkSchema } from "express-validator";
 export const ordersRoutes = (app: Express) => {
   // here we will list all the routes related to the orders
   app.get("/api/orders", getAllOrders);
+
+  app.post(
+    "/api/orders",
+    authRequired,
+    checkSchema({
+      ticketId: {
+        in: "body",
+        notEmpty: true,
+      },
+    }),
+    showMessages,
+    createOrder
+  );
 
   app.get("/api/orders/:orderId", getOrderDetails);
 
