@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import { Ticket } from "../models/ticket.model";
 import { OrderStatus, RouteError } from "@mohammadyahyaq-learning/common";
 import { Order } from "../models/order.model";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
+import { OrderCreatedPublisher } from "../publishers/OrderCreatedPublisher";
+import { OrderCancelledPublisher } from "../publishers/OrderCancelledPublisher";
 
 export const getAllOrders = async (req: Request, res: Response) => {
   const orders = await Order.find({
@@ -38,6 +41,18 @@ export const createOrder = async (req: Request, res: Response) => {
   });
   await order.save();
 
+  // publish order created event
+  new OrderCreatedPublisher(singletonNatsClient.client).publish({
+    id: order.id,
+    status: order.status,
+    userId: order.userId,
+    expiresAt: order.expiresAt.toISOString(),
+    ticket: {
+      id: ticket.id,
+      price: ticket.price,
+    },
+  });
+
   res.status(201).send(order);
 };
 
@@ -55,7 +70,7 @@ export const getOrderDetails = async (req: Request, res: Response) => {
 
 export const deleteOrder = async (req: Request, res: Response) => {
   const { orderId } = req.params;
-  const order = await Order.findById(orderId);
+  const order = await Order.findById(orderId).populate("ticket");
 
   if (!order) {
     throw new RouteError("Order not found", 404);
@@ -66,6 +81,13 @@ export const deleteOrder = async (req: Request, res: Response) => {
 
   order.status = OrderStatus.Cancelled;
   await order.save();
+
+  new OrderCancelledPublisher(singletonNatsClient.client).publish({
+    id: order.id,
+    ticket: {
+      id: order.ticket.id,
+    },
+  });
 
   res.status(204).send(order);
 };
