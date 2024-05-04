@@ -25,7 +25,18 @@ export const ordersRoutes = (app: Express) => {
     createOrder
   );
 
-  app.get("/api/orders/:orderId", getOrderDetails);
+  app.get(
+    "/api/orders/:orderId",
+    authRequired,
+    checkSchema({
+      orderId: {
+        in: "params",
+        notEmpty: true,
+      },
+    }),
+    showMessages,
+    getOrderDetails
+  );
 
   app.delete(
     "/api/orders/:orderId",

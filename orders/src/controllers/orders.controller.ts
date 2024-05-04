@@ -41,8 +41,16 @@ export const createOrder = async (req: Request, res: Response) => {
   res.status(201).send(order);
 };
 
-export const getOrderDetails = (req: Request, res: Response) => {
-  res.send({});
+export const getOrderDetails = async (req: Request, res: Response) => {
+  const order = await Order.findById(req.params.orderId).populate("ticket");
+
+  if (!order) {
+    throw new RouteError("Order not found", 404);
+  }
+  if (order.userId !== req.user!.id) {
+    throw new RouteError("You are not authorized to get this resource", 401);
+  }
+  res.status(200).send(order);
 };
 
 export const deleteOrder = (req: Request, res: Response) => {
