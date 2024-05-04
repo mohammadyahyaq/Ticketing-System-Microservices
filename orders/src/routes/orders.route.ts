@@ -42,8 +42,8 @@ export const ordersRoutes = (app: Express) => {
     "/api/orders/:orderId",
     authRequired,
     checkSchema({
-      ticketId: {
-        in: "body",
+      orderId: {
+        in: "params",
         notEmpty: true,
       },
     }),

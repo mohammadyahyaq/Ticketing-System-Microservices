@@ -173,3 +173,36 @@ it("returns an error if user request another user order", async () => {
     .send()
     .expect(401);
 });
+
+// delete order
+
+it("marks order as cancelled", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const ticket = Ticket.build({
+    title: "movie",
+    price: 20,
+  });
+  await ticket.save();
+
+  // make a request to create an order
+  const { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", validCookie)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  // make a request to cancel the order
+  await request(app)
+    .delete(`/api/orders/${order.id}`)
+    .set("Cookie", validCookie)
+    .send()
+    .expect(204);
+
+  // check if order is cancelled
+  const updatedOrder = await Order.findById(order.id);
+  expect(updatedOrder!.status).toEqual(OrderStatus.Cancelled);
+});
+
+it.todo("emits an event after delete an order");
