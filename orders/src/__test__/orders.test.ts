@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Ticket } from "../models/ticket.model";
 import { Order } from "../models/order.model";
 import { OrderStatus } from "@mohammadyahyaq-learning/common";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
 
 // get all orders
 it("fetches orders for particular user", async () => {
@@ -117,7 +118,25 @@ it("reserves a ticket", async () => {
     .expect(201);
 });
 
-it.todo("emits an event");
+it("emits an event", async () => {
+  const validCookie = getAuthCookie();
+
+  // step 1: create a ticket
+  const ticket = Ticket.build({
+    title: "movie",
+    price: 20,
+  });
+  await ticket.save();
+
+  // step 2: create an order for that ticket
+  await request(app)
+    .post("/api/orders")
+    .set("Cookie", validCookie)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  expect(singletonNatsClient.client.publish).toHaveBeenCalled();
+});
 
 // get order details
 
@@ -205,4 +224,29 @@ it("marks order as cancelled", async () => {
   expect(updatedOrder!.status).toEqual(OrderStatus.Cancelled);
 });
 
-it.todo("emits an event after delete an order");
+it("emits an event after delete an order", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const ticket = Ticket.build({
+    title: "movie",
+    price: 20,
+  });
+  await ticket.save();
+
+  // make a request to create an order
+  const { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", validCookie)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  // make a request to cancel the order
+  await request(app)
+    .delete(`/api/orders/${order.id}`)
+    .set("Cookie", validCookie)
+    .send()
+    .expect(204);
+
+  expect(singletonNatsClient.client.publish).toHaveBeenCalled();
+});
