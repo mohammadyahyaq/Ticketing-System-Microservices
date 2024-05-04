@@ -120,6 +120,7 @@ it("reserves a ticket", async () => {
 it.todo("emits an event");
 
 // get order details
+
 it("fetches the order", async () => {
   const validCookie = getAuthCookie();
 
@@ -145,4 +146,30 @@ it("fetches the order", async () => {
     .expect(200);
 
   expect(fetchedOrder.id).toEqual(order.id);
+});
+
+it("returns an error if user request another user order", async () => {
+  const userOneToken = getAuthCookie();
+  const userTwoToken = getAuthCookie();
+
+  // create a ticket
+  const ticket = Ticket.build({
+    title: "movie",
+    price: 20,
+  });
+  await ticket.save();
+
+  // make an order for that ticket
+  const { body: order } = await request(app)
+    .post("/api/orders")
+    .set("Cookie", userOneToken)
+    .send({ ticketId: ticket.id })
+    .expect(201);
+
+  // make a request to get that ticket
+  await request(app)
+    .get(`/api/orders/${order.id}`)
+    .set("Cookie", userTwoToken)
+    .send()
+    .expect(401);
 });
