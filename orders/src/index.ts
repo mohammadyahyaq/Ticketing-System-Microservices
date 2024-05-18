@@ -4,6 +4,8 @@ import "./config/database";
 import { app } from "./app";
 
 import { singletonNatsClient } from "./config/SingletonNatsClient";
+import { TicketCreatedListener } from "./listeners/TicketCreatedListener";
+import { TicketUpdatedListener } from "./listeners/TicketUpdatedListener";
 
 (async () => {
   if (!process.env.NATS_CLUSTER_ID) {
@@ -30,6 +32,9 @@ import { singletonNatsClient } from "./config/SingletonNatsClient";
     process.on("SIGINT", () => singletonNatsClient.client.close());
     // close connection on terminate
     process.on("SIGTERM", () => singletonNatsClient.client.close());
+
+    new TicketCreatedListener(singletonNatsClient.client).listen();
+    new TicketUpdatedListener(singletonNatsClient.client).listen();
   } catch (error) {
     console.log(error);
   }

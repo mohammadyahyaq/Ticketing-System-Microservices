@@ -4,6 +4,7 @@ import { OrderStatus } from "@mohammadyahyaq-learning/common";
 
 // interface that represents that type of Ticket.build() parameter
 interface TicketAttrs {
+  id?: string;
   title: string;
   price: number;
 }
@@ -42,7 +43,11 @@ const ticketSchema = new Schema(
 );
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
-  return new Ticket(attrs);
+  return new Ticket({
+    _id: attrs.id,
+    title: attrs.title,
+    price: attrs.price,
+  });
 };
 // we need to use function keyword to use this keyword
 ticketSchema.methods.isReserved = async function () {
