@@ -1,4 +1,5 @@
 import { Document, Model, Schema, model } from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // interface that represents that type of Ticket.build() parameter
 interface TicketAttrs {
@@ -17,6 +18,7 @@ interface TicketDoc extends Document {
   title: string;
   price: string;
   userId: string;
+  version: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,6 +48,9 @@ const ticketSchema = new Schema(
     },
   }
 );
+
+ticketSchema.set("versionKey", "version");
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
