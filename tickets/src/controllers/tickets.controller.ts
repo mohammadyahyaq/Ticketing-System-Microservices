@@ -20,6 +20,7 @@ export const createTicketController = async (req: Request, res: Response) => {
     userId: ticket.userId,
     createdAt: ticket.createdAt,
     updatedAt: ticket.updatedAt,
+    version: ticket.version,
   });
 
   res.status(201).send(ticket);
@@ -60,7 +61,7 @@ export const updateTicketController = async (req: Request, res: Response) => {
     title: req.body.title,
     price: req.body.price,
   });
-  ticket.save();
+  await ticket.save();
 
   // publish update event
   await new TicketUpdatedPublisher(singletonNatsClient.client).publish({
@@ -70,6 +71,7 @@ export const updateTicketController = async (req: Request, res: Response) => {
     userId: ticket.userId,
     createdAt: ticket.createdAt,
     updatedAt: ticket.updatedAt,
+    version: ticket.version,
   });
 
   res.send(ticket);

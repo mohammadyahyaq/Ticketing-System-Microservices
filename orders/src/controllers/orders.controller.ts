@@ -47,6 +47,7 @@ export const createOrder = async (req: Request, res: Response) => {
     status: order.status,
     userId: order.userId,
     expiresAt: order.expiresAt.toISOString(),
+    version: order.version,
     ticket: {
       id: ticket.id,
       price: ticket.price,
@@ -84,6 +85,7 @@ export const deleteOrder = async (req: Request, res: Response) => {
 
   new OrderCancelledPublisher(singletonNatsClient.client).publish({
     id: order.id,
+    version: order.version,
     ticket: {
       id: order.ticket.id,
     },
