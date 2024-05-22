@@ -1,5 +1,3 @@
-// ticket listeners
-
 import { TicketCreatedEvent } from "@mohammadyahyaq-learning/common";
 import { singletonNatsClient } from "../config/SingletonNatsClient";
 import { TicketCreatedListener } from "../listeners/TicketCreatedListener";
