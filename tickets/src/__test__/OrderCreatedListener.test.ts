@@ -61,3 +61,17 @@ it("acks the message", async () => {
   await listener.onMessage(eventData, msg);
   expect(msg.ack).toHaveBeenCalled();
 });
+
+it("publishes ticket updated event", async () => {
+  const { listener, eventData, msg } = await setup();
+
+  await listener.onMessage(eventData, msg);
+
+  expect(singletonNatsClient.client.publish).toHaveBeenCalled();
+
+  const ticketUpdatedEventData = JSON.parse(
+    (singletonNatsClient.client.publish as jest.Mock).mock.calls[0][1]
+  );
+
+  expect(eventData.id).toEqual(ticketUpdatedEventData.orderId);
+});
