@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../app";
 import { Ticket } from "../models/tickets.model";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { singletonNatsClient } from "../config/SingletonNatsClient";
 
 // ============= create ticket =============
@@ -357,4 +357,33 @@ it("increments the version number on multiple save", async () => {
   expect(ticket.version).toEqual(1);
   await ticket.save();
   expect(ticket.version).toEqual(2);
+});
+
+it("rejects update if ticket is reserved", async () => {
+  const validCookie = getAuthCookie();
+
+  // create a ticket
+  const createTicketResponse = await request(app)
+    .post("/api/tickets")
+    .set("Cookie", validCookie)
+    .send({
+      title: "old title",
+      price: 10,
+    })
+    .expect(201);
+
+  // reserve the ticket
+  const ticket = await Ticket.findById(createTicketResponse.body.id);
+  ticket!.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+  await ticket!.save();
+
+  // update the ticket
+  await request(app)
+    .put(`/api/tickets/${createTicketResponse.body.id}`)
+    .set("Cookie", validCookie)
+    .send({
+      title: "new title",
+      price: 20,
+    })
+    .expect(400);
 });

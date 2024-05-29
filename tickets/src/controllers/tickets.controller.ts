@@ -53,6 +53,11 @@ export const updateTicketController = async (req: Request, res: Response) => {
     throw new RouteError("Not Found", 404);
   }
 
+  // in case ticket is reserved throw error
+  if (ticket.orderId) {
+    throw new RouteError("Cannot update a reserved ticket", 400);
+  }
+
   if (ticket.userId !== req.user!.id) {
     throw new RouteError("Not authorized", 401);
   }
