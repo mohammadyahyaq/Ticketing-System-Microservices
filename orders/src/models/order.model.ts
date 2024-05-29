@@ -1,6 +1,7 @@
 import { OrderStatus } from "@mohammadyahyaq-learning/common";
 import { Document, Model, Schema, model } from "mongoose";
 import { TicketDoc } from "./ticket.model";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // interface that represents that type of Ticket.build() parameter
 interface OrderAttrs {
@@ -56,6 +57,9 @@ const orderSchema = new Schema(
     },
   }
 );
+
+orderSchema.set("versionKey", "version");
+orderSchema.plugin(updateIfCurrentPlugin);
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);

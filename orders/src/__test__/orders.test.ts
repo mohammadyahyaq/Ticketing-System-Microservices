@@ -11,6 +11,7 @@ it("fetches orders for particular user", async () => {
   // create three tickets
   async function buildTicket() {
     const ticket = Ticket.build({
+      id: new mongoose.Types.ObjectId().toHexString(),
       title: "Movie",
       price: 20,
     });
@@ -79,6 +80,7 @@ it("should returns an error if the ticket is already reserved", async () => {
 
   // step 1: create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -105,6 +107,7 @@ it("reserves a ticket", async () => {
 
   // step 1: create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -123,6 +126,7 @@ it("emits an event", async () => {
 
   // step 1: create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -145,6 +149,7 @@ it("fetches the order", async () => {
 
   // create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -173,6 +178,7 @@ it("returns an error if user request another user order", async () => {
 
   // create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -200,6 +206,7 @@ it("marks order as cancelled", async () => {
 
   // create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });
@@ -229,6 +236,7 @@ it("emits an event after delete an order", async () => {
 
   // create a ticket
   const ticket = Ticket.build({
+    id: new mongoose.Types.ObjectId().toHexString(),
     title: "movie",
     price: 20,
   });

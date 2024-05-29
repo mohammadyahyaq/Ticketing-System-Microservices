@@ -5,7 +5,7 @@ import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 
 // interface that represents that type of Ticket.build() parameter
 interface TicketAttrs {
-  id?: string;
+  id: string;
   title: string;
   price: number;
 }
