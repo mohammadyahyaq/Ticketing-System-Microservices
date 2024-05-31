@@ -30,7 +30,7 @@ export const createOrder = async (req: Request, res: Response) => {
 
   // calculate expiration date (15 mins)
   const expiration = new Date();
-  expiration.setSeconds(expiration.getSeconds() + 16 * 60); // set 15 minutes into the future
+  expiration.setSeconds(expiration.getSeconds() + 15 * 60); // set 15 minutes into the future
 
   // build/store the order
   const order = Order.build({
