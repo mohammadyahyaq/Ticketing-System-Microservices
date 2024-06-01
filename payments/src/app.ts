@@ -5,6 +5,7 @@ import "express-async-errors";
 import cookieSession from "cookie-session";
 
 import { currentUser, errorHandler } from "@mohammadyahyaq-learning/common";
+import { paymentsRoutes } from "./routes/payments.route";
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(
   })
 );
 app.use(currentUser);
+
+paymentsRoutes(app);
 
 // now we add the error handler
 app.use(errorHandler);
