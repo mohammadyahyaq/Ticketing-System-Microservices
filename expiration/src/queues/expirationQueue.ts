@@ -1,4 +1,6 @@
 import Queue from "bull";
+import { ExpirationCompletePublisher } from "../publishers/ExpirationCompletePublisher";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
 
 interface Payload {
   orderId: string;
@@ -11,10 +13,9 @@ const expirationQueue = new Queue<Payload>("order:expiration", {
 });
 
 expirationQueue.process(async (job) => {
-  console.log(
-    "I want to publish an expiration:complete event for orderId",
-    job.data.orderId
-  );
+  new ExpirationCompletePublisher(singletonNatsClient.client).publish({
+    orderId: job.data.orderId,
+  });
 });
 
 export { expirationQueue };
