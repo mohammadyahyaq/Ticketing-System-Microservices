@@ -6,6 +6,7 @@ import { app } from "./app";
 import { singletonNatsClient } from "./config/SingletonNatsClient";
 import { TicketCreatedListener } from "./listeners/TicketCreatedListener";
 import { TicketUpdatedListener } from "./listeners/TicketUpdatedListener";
+import { ExpirationCompleteListener } from "./listeners/ExpirationCompleteListener";
 
 (async () => {
   if (!process.env.NATS_CLUSTER_ID) {
@@ -35,6 +36,7 @@ import { TicketUpdatedListener } from "./listeners/TicketUpdatedListener";
 
     new TicketCreatedListener(singletonNatsClient.client).listen();
     new TicketUpdatedListener(singletonNatsClient.client).listen();
+    new ExpirationCompleteListener(singletonNatsClient.client).listen();
   } catch (error) {
     console.log(error);
   }
