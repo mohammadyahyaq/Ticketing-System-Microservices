@@ -39,8 +39,16 @@ build:
         manual:
           - src: '**/*.tsx'
             dest: .
-    - image: mohammadyahayaq/expiration
+    - image: mohammadyahyaq/expiration
       context: ./expiration
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: '**/*.tsx'
+            dest: .
+    - image: mohammadyahyaq/payments
+      context: ./payments
       docker:
         dockerfile: Dockerfile
       sync:
