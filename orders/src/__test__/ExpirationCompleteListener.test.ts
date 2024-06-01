@@ -48,3 +48,33 @@ async function setup() {
     msg,
   };
 }
+
+it("updates order status to cancelled", async () => {
+  const { listener, order, eventData, msg } = await setup();
+
+  await listener.onMessage(eventData, msg);
+
+  const updatedOrder = await Order.findById(order.id);
+
+  expect(updatedOrder!.status).toEqual(OrderStatus.Cancelled);
+});
+
+it("emits an order cancelled event", async () => {
+  const { listener, order, eventData, msg } = await setup();
+
+  await listener.onMessage(eventData, msg);
+
+  const publishMock = singletonNatsClient.client.publish as jest.Mock;
+  expect(publishMock).toHaveBeenCalled();
+
+  const actualEventData = JSON.parse(publishMock.mock.calls[0][1]);
+
+  expect(actualEventData.id).toEqual(order.id);
+});
+
+it("ack the message", async () => {
+  const { listener, eventData, msg } = await setup();
+
+  await listener.onMessage(eventData, msg);
+  expect(msg.ack).toHaveBeenCalled();
+});
