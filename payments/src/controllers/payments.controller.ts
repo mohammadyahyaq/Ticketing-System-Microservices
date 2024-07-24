@@ -3,6 +3,8 @@ import { Order } from "../models/order.model";
 import { OrderStatus, RouteError } from "@mohammadyahyaq-learning/common";
 import { stripe } from "../config/stripe";
 import { Payment } from "../models/payment.model";
+import { PaymentCreatedPublisher } from "../publishers/PaymentCreatedPublisher";
+import { singletonNatsClient } from "../config/SingletonNatsClient";
 
 export const createPayment = async (req: Request, res: Response) => {
   const { token, orderId } = req.body;
@@ -33,5 +35,11 @@ export const createPayment = async (req: Request, res: Response) => {
   });
   await payment.save();
 
-  res.status(201).send({ success: true });
+  await new PaymentCreatedPublisher(singletonNatsClient.client).publish({
+    id: payment.id,
+    orderId: payment.orderId,
+    stripeId: payment.stripeId,
+  });
+
+  res.status(201).send({ id: payment.id });
 };
