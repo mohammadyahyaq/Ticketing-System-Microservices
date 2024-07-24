@@ -26,5 +26,5 @@ export const createPayment = async (req: Request, res: Response) => {
     source: token,
   });
 
-  res.send({ success: true });
+  res.status(204).send({ success: true });
 };
