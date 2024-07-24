@@ -38,13 +38,16 @@ afterAll(async () => {
 // ============= globally scoped functions (testing helpers) =============
 // update the global type
 declare global {
-  var getAuthCookie: () => string[];
+  var getAuthCookie: (id?: string) => string[];
 }
 
-global.getAuthCookie = () => {
+global.getAuthCookie = (id?: string) => {
   // create the token
   const token = jwt.sign(
-    { id: new Types.ObjectId().toHexString(), email: "test@test.com" },
+    {
+      id: id || new Types.ObjectId().toHexString(),
+      email: "test@test.com",
+    },
     process.env.JWT_KEY!
   );
 
