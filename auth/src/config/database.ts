@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 mongoose.set("strictQuery", true);
 
 const start = async () => {
-  console.log("Starting up 3");
   if (!process.env.JWT_KEY) {
     throw Error("JWT_KEY is not defined");
   }
