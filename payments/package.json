@@ -6,7 +6,8 @@
     "start": "node --watch dist/index.js",
     "dev": "ts-node-dev --poll src/index.ts",
     "build": "npx tsc --project tsconfig.build.json",
-    "test": "jest --watchAll --no-cache"
+    "test": "jest --watchAll --no-cache",
+    "test:ci": "jest"
   },
   "jest": {
     "preset": "ts-jest",
