@@ -9,7 +9,7 @@ it("should returns 201 after successful signup request", async () => {
       email: "test@test.com",
       password: "Test1234",
     })
-    .expect(400);
+    .expect(201);
 });
 
 it("should returns a status code 400, after sending an invalid email", async () => {
